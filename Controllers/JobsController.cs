@@ -1,4 +1,5 @@
 ﻿using JobSearchPortal.Data;
+using JobSearchPortal.DTOs;
 using JobSearchPortal.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,9 +19,22 @@ namespace JobSearchPortal.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Job>>> GetJobs()
+        public async Task<ActionResult<IEnumerable<JobDto>>> GetJobs()
         {
-            return await _context.Jobs.ToListAsync();
+            return await _context.Jobs
+                .Include(j => j.Recruiter)
+                 .Select(j => new JobDto
+                 {
+                     JobId = j.JobId,
+                     Title = j.Title,
+                     Description = j.Description,
+                     Company = j.Company,
+                     Location = j.Location,
+                     SalaryRange = j.SalaryRange,
+                     PostedDate = j.PostedDate,
+                     RecruiterUsername = j.Recruiter.Username
+                 })
+                .ToListAsync();
         }
 
         [HttpGet("{id}")]

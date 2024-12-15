@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
+using System.Diagnostics;
 
 
 namespace JobSearchPortal.Controllers
@@ -125,6 +126,8 @@ namespace JobSearchPortal.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(string username, string password)
         {
+            Console.WriteLine("test");
+            Debug.WriteLine($"Request received for GetUser with id: {username}"); 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
 
             if (user == null)
