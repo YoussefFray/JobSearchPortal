@@ -1,5 +1,6 @@
 ﻿using JobSearchPortal.Data;
 using JobSearchPortal.Entities;
+using JobSearchPortal.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +12,12 @@ namespace JobSearchPortal.Controllers
     public class NotificationsController : ControllerBase
     {
         private readonly JobSearchPortalContext _context;
+        private readonly IMessageProducer _messageProducer;
 
-        public NotificationsController(JobSearchPortalContext context)
+        public NotificationsController(JobSearchPortalContext context , IMessageProducer _messageProducer)
         {
             _context = context;
+            this._messageProducer = _messageProducer;
         }
 
         [HttpGet]
@@ -96,6 +99,19 @@ namespace JobSearchPortal.Controllers
         private bool NotificationExists(int id)
         {
             return _context.Notifications.Any(e => e.NotificationId == id);
+        }
+
+
+        [HttpPost("send")]
+        public async Task<ActionResult> SendNotification(Notification notification)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            _messageProducer.SendingMessage<Notification>(notification);
+
+            return Ok();
         }
     }
 }

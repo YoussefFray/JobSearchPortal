@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using JobSearchPortal.Data;
+using JobSearchPortal.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -20,6 +21,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<JobSearchPortalContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IMessageProducer, MessageProducer>();
+
+
 
 var app = builder.Build();
 
